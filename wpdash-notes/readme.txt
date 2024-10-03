@@ -3,7 +3,7 @@ Contributors: WPFormation, NicolasKulka, WPServeur
 Tags: note, notes, dashboard notes, wordpress notes, admin note, private note, notification, collaboration, workflow, to do list, note list, note widget, admin, dashboard
 Requires at least: 4.2
 Tested up to: 6.5
-Stable tag: 1.3.4.1
+Stable tag: 1.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,9 @@ None of our extensions exploit data from the sites where they are installed.
 3. Vue d'une note détaillée avec texte, liste, lien hypertexte et image
 
 == Changelog ==
+
+= 1.3.5 =
+* Fix Vulenrability : Missing Authorization to Authenticated (Subscriber+) Sensitive Information Exposure (Thanks Wordfence)
 
 = 1.3.4.1 =
 * Fix screen admin notices

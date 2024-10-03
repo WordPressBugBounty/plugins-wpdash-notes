@@ -24,12 +24,12 @@ class Plugin {
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 	}
 
-    public static function admin_notices() {
-	    $screen = get_current_screen();
-	    if ( $screen && 'edit-wpf_post_it' === $screen->id ) {
-		    include( WPDASH_NOTES_DIR . '/blocks/pub_wpboutik.php' );
-	    }
-    }
+	public static function admin_notices() {
+		$screen = get_current_screen();
+		if ( $screen && 'edit-wpf_post_it' === $screen->id ) {
+			include( WPDASH_NOTES_DIR . '/blocks/pub_wpboutik.php' );
+		}
+	}
 
 	public static function install() {
 		$locale = function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
@@ -204,30 +204,37 @@ class Plugin {
 		);
 		wp_insert_comment( $data );
 
-		wp_send_json_success( [ 'post_id' => $postid ] );
+		wp_send_json_success( [ 'post_id' => $postid, 'nonce' => wp_create_nonce( 'nonce_list_comment' ) ] );
 	}
 
 	public static function wp_ajax_post_it_list_comment() {
+		check_ajax_referer( 'nonce_list_comment' );
+
 		$post_id = isset( $_POST['post_id'] ) ? sanitize_text_field( $_POST['post_id'] ) : '';
 
-		$comments = get_comments(
-			array(
-				'post_id' => $post_id,
-				'order'   => 'ASC'
-			)
-		);
+		if ( $post_id ) {
+			$post = get_post( $post_id );
+			if ( 'wpf_post_it' === $post->post_type ) {
+				$comments = get_comments(
+					array(
+						'post_id' => $post_id,
+						'order'   => 'ASC'
+					)
+				);
 
-		$html = '';
+				$html = '';
 
-		if ( ! empty ( $comments ) ) {
-			$texthtml = ( count( $comments ) > 1 ) ? __( 'Comments :', 'wpdash-notes' ) : __( 'Comment :', 'wpdash-notes' );
-			$html     .= $texthtml . '<br>';
-			foreach ( $comments as $comment ) {
-				$html .= '<b>' . $comment->comment_author . '</b> : ' . $comment->comment_content . '<br>';
+				if ( ! empty ( $comments ) ) {
+					$texthtml = ( count( $comments ) > 1 ) ? __( 'Comments :', 'wpdash-notes' ) : __( 'Comment :', 'wpdash-notes' );
+					$html     .= $texthtml . '<br>';
+					foreach ( $comments as $comment ) {
+						$html .= '<b>' . $comment->comment_author . '</b> : ' . $comment->comment_content . '<br>';
+					}
+				}
+
+				wp_send_json_success( array( 'html' => $html, 'post_id' => $post_id ) );
 			}
 		}
-
-		wp_send_json_success( array( 'html' => $html, 'post_id' => $post_id ) );
 	}
 
 	public static function wpf_edit_form_after_title() {

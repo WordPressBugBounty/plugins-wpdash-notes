@@ -105,6 +105,7 @@ options.cookies
                 .done(function (response) {
                     var params = {};
                     params.post_id = response.post_id;
+                    params._wpnonce = response.nonce;
                     wp.ajax.post('postitlistcomment', params).done(function (response) {
                         var parent = $('#wpf-post-it-' + response.post_id);
                         parent.find('#comments').html( response.html );
